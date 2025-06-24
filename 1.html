@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>武汉大学专业招生信息查询</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-600">武汉大学专业招生信息查询</h1>
+            <p class="text-gray-500 mt-2">根据您提供的JSON数据生成</p>
+        </header>
+
+        <!-- 搜索区域 -->
+        <div class="mb-8 max-w-2xl mx-auto">
+            <div class="relative">
+                <input type="text" id="searchInput"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="输入专业名称进行搜索...">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果展示区域 -->
+        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 结果将通过JS动态插入这里 -->
+        </div>
+        
+        <!-- 未找到结果提示 -->
+        <div id="noResults" class="hidden text-center py-16">
+            <h2 class="text-2xl font-semibold text-gray-700">未找到匹配的专业</h2>
+            <p class="text-gray-500 mt-2">请尝试其他关键词。</p>
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "计算机科学与技术(雷军班)",
+                "25年计划": 5,
+                "学院名称": "计算机学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": null, "min_rank": null },
+                    { "year": "2024", "enrollment": 9, "min_rank": 412 }
+                ]
+            },
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "计算机科学与技术(弘毅班)",
+                "25年计划": 5,
+                "学院名称": "计算机学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": 12, "min_rank": 1396 },
+                    { "year": "2024", "enrollment": 6, "min_rank": 726 }
+                ]
+            },
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "软件工程(特软班)",
+                "25年计划": 5,
+                "学院名称": "计算机学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "计算机类(计算机学院)",
+                "25年计划": 120,
+                "学院名称": "计算机学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 121, "min_rank": 3387 },
+                    { "year": "2023", "enrollment": 106, "min_rank": 2984 },
+                    { "year": "2024", "enrollment": 120, "min_rank": 2879 }
+                ]
+            },
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "人工智能(自强班)",
+                "25年计划": 5,
+                "学院名称": "人工智能学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 8.0,
+                "选考科目": "物理和化学",
+                "专业名称": "人工智能",
+                "25年计划": 30,
+                "学院名称": "人工智能学院",
+                "历年数据": []
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "电子信息类(电子信息学院)",
+                "25年计划": 126,
+                "学院名称": "电子信息学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 129, "min_rank": 3677 },
+                    { "year": "2023", "enrollment": 130, "min_rank": 3901 },
+                    { "year": "2024", "enrollment": 154, "min_rank": 3532 }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "遥感科学与技术(知卓菁英创新班)",
+                "25年计划": 5,
+                "学院名称": "遥感信息工程学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "遥感科学与技术",
+                "25年计划": 111,
+                "学院名称": "遥感信息工程学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 83, "min_rank": 3387 },
+                    { "year": "2023", "enrollment": 88, "min_rank": 3091 },
+                    { "year": "2024", "enrollment": 110, "min_rank": 3712 }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "导航工程(智能导航创新班)",
+                "25年计划": 24,
+                "学院名称": "测绘学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": 23, "min_rank": 4682 },
+                    { "year": "2024", "enrollment": 25, "min_rank": 3712 }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "密码科学与技术(创新班)",
+                "25年计划": 8,
+                "学院名称": "国家网络安全学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": null, "min_rank": null },
+                    { "year": "2024", "enrollment": 26, "min_rank": 2727 }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "网络空间安全(创新班)",
+                "25年计划": 10,
+                "学院名称": "国家网络安全学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": null, "min_rank": null },
+                    { "year": "2024", "enrollment": 33, "min_rank": 1507 }
+                ]
+            },
+            {
+                "专业组": 9.0,
+                "选考科目": "物理和化学",
+                "专业名称": "计算机类(国家网络安全学院)",
+                "25年计划": 120,
+                "学院名称": "国家网络安全学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 105, "min_rank": 3067 },
+                    { "year": "2023", "enrollment": 82, "min_rank": 3160 },
+                    { "year": "2024", "enrollment": 69, "min_rank": 3218 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "机器人工程(机器人学院)",
+                "25年计划": 35,
+                "学院名称": "机器人学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "工科试验班(碳中和自强班)",
+                "25年计划": 5,
+                "学院名称": "水利水电学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 1, "min_rank": 3231 },
+                    { "year": "2023", "enrollment": 6, "min_rank": 3528 },
+                    { "year": "2024", "enrollment": 2, "min_rank": 1971 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "工科试验班(智能电气创新班)",
+                "25年计划": 10,
+                "学院名称": "电气与自动化学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 10, "min_rank": 3067 },
+                    { "year": "2023", "enrollment": 5, "min_rank": 1761 },
+                    { "year": "2024", "enrollment": 33, "min_rank": 2315 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "工科试验班(电气类)",
+                "25年计划": 110,
+                "学院名称": "电气与自动化学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": 103, "min_rank": 3901 },
+                    { "year": "2024", "enrollment": 105, "min_rank": 3712 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "工科试验班(机器人与智能机械试验班)",
+                "25年计划": 26,
+                "学院名称": "动力与机械学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": null, "min_rank": null },
+                    { "year": "2024", "enrollment": 32, "min_rank": 3532 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "工科试验班(智慧能源与智能制造类)",
+                "25年计划": 40,
+                "学院名称": "动力与机械学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2023", "enrollment": 68, "min_rank": 4475 },
+                    { "year": "2024", "enrollment": 19, "min_rank": 3712 }
+                ]
+            },
+            {
+                "专业组": 10.0,
+                "选考科目": "物理和化学",
+                "专业名称": "微电子科学与工程(集成电路学院)",
+                "25年计划": 40,
+                "学院名称": "集成电路学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "理科试验班(弘毅学堂)",
+                "25年计划": 30,
+                "学院名称": "弘毅学堂",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 21, "min_rank": 1543 },
+                    { "year": "2023", "enrollment": 19, "min_rank": 1629 },
+                    { "year": "2024", "enrollment": 60, "min_rank": 2596 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "理科试验班(弘毅双学位试验班)",
+                "25年计划": 30,
+                "学院名称": "弘毅学堂",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "数学类(中法拔尖班)",
+                "25年计划": 2,
+                "学院名称": "数学与统计学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "数学类",
+                "25年计划": 48,
+                "学院名称": "数学与统计学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 34, "min_rank": 3677 },
+                    { "year": "2023", "enrollment": 36, "min_rank": 3351 },
+                    { "year": "2024", "enrollment": 45, "min_rank": 3901 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "物理学类",
+                "25年计划": 30,
+                "学院名称": "物理科学与技术学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 39, "min_rank": 3835 },
+                    { "year": "2023", "enrollment": null, "min_rank": 3528 },
+                    { "year": "2024", "enrollment": 30, "min_rank": 3901 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "化学类(新能源自强班)",
+                "25年计划": 8,
+                "学院名称": "化学与分子科学学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 10, "min_rank": 3387 },
+                    { "year": "2023", "enrollment": 12, "min_rank": 3901 },
+                    { "year": "2024", "enrollment": 8, "min_rank": 3362 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "生物科学(菁英创新班)",
+                "25年计划": 4,
+                "学院名称": "生命科学学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null },
+                    { "year": "2024", "enrollment": 14, "min_rank": 2727 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "生物科学类",
+                "25年计划": 18,
+                "学院名称": "生命科学学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 20, "min_rank": 3067 },
+                    { "year": "2023", "enrollment": 20, "min_rank": 3705 },
+                    { "year": "2024", "enrollment": 27, "min_rank": 3901 }
+                ]
+            },
+            {
+                "专业组": 11.0,
+                "选考科目": "物理和化学",
+                "专业名称": "地球物理学(数智地空弘毅班)",
+                "25年计划": 8,
+                "学院名称": "地球与空间科学技术学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 12.0,
+                "选考科目": "物理和化学",
+                "专业名称": "口腔医学(8年)",
+                "25年计划": 5,
+                "学院名称": "口腔医学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 19, "min_rank": 1299 },
+                    { "year": "2023", "enrollment": 7, "min_rank": 903 },
+                    { "year": "2024", "enrollment": 18, "min_rank": 1136 }
+                ]
+            },
+            {
+                "专业组": 12.0,
+                "选考科目": "物理和化学",
+                "专业名称": "口腔医学(5+3一体化)",
+                "25年计划": 6,
+                "学院名称": "口腔医学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 7, "min_rank": 1636 },
+                    { "year": "2023", "enrollment": 9, "min_rank": 1396 },
+                    { "year": "2024", "enrollment": 6, "min_rank": 1719 }
+                ]
+            },
+            {
+                "专业组": 12.0,
+                "选考科目": "物理和化学",
+                "专业名称": "临床医学(8年)",
+                "25年计划": 32,
+                "学院名称": "医学部",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 34, "min_rank": 3387 },
+                    { "year": "2023", "enrollment": 27, "min_rank": 2854 },
+                    { "year": "2024", "enrollment": 41, "min_rank": 2727 }
+                ]
+            },
+            {
+                "专业组": 12.0,
+                "选考科目": "物理和化学",
+                "专业名称": "临床医学(5+3一体化中法自强班)",
+                "25年计划": 5,
+                "学院名称": "医学部",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 12.0,
+                "选考科目": "物理和化学",
+                "专业名称": "临床医学(5+3一体化)",
+                "25年计划": 26,
+                "学院名称": "医学部",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 4, "min_rank": 3387 },
+                    { "year": "2023", "enrollment": 42, "min_rank": 3901 },
+                    { "year": "2024", "enrollment": 2, "min_rank": 2879 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "文科试验班类(弘毅学堂)",
+                "25年计划": 55,
+                "学院名称": "弘毅学堂",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 29, "min_rank": 341 },
+                    { "year": "2023", "enrollment": 23, "min_rank": 297 },
+                    { "year": "2024", "enrollment": 50, "min_rank": 270 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "外国语言文学类",
+                "25年计划": 25,
+                "学院名称": "外国语言文学学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 9, "min_rank": 657 },
+                    { "year": "2023", "enrollment": 21, "min_rank": 609 },
+                    { "year": "2024", "enrollment": 35, "min_rank": 747 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "新闻传播学类(国际传播、智能传播试验班)",
+                "25年计划": 8,
+                "学院名称": "新闻与传播学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": null, "min_rank": null }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "新闻传播学类",
+                "25年计划": 26,
+                "学院名称": "新闻与传播学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 45, "min_rank": 629 },
+                    { "year": "2023", "enrollment": 44, "min_rank": 580 },
+                    { "year": "2024", "enrollment": 35, "min_rank": 698 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "中国语言文学类",
+                "25年计划": 43,
+                "学院名称": "文学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 47, "min_rank": 629 },
+                    { "year": "2023", "enrollment": 40, "min_rank": 431 },
+                    { "year": "2024", "enrollment": 41, "min_rank": 420 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "历史学类",
+                "25年计划": 20,
+                "学院名称": "历史学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 10, "min_rank": 657 },
+                    { "year": "2023", "enrollment": 20, "min_rank": 580 },
+                    { "year": "2024", "enrollment": 20, "min_rank": 614 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "哲学类",
+                "25年计划": 22,
+                "学院名称": "哲学学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 4, "min_rank": 629 },
+                    { "year": "2023", "enrollment": 7, "min_rank": 580 },
+                    { "year": "2024", "enrollment": 17, "min_rank": 747 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "法学",
+                "25年计划": 50,
+                "学院名称": "法学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 97, "min_rank": 418 },
+                    { "year": "2023", "enrollment": 60, "min_rank": 297 },
+                    { "year": "2024", "enrollment": 42, "min_rank": 317 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "经济学类",
+                "25年计划": 60,
+                "学院名称": "经济与管理学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 71, "min_rank": 564 },
+                    { "year": "2023", "enrollment": 77, "min_rank": 519 },
+                    { "year": "2024", "enrollment": 65, "min_rank": 496 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "公共管理类",
+                "25年计划": 38,
+                "学院名称": "政治与公共管理学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 14, "min_rank": 657 },
+                    { "year": "2023", "enrollment": 28, "min_rank": 609 },
+                    { "year": "2024", "enrollment": 45, "min_rank": 747 }
+                ]
+            },
+            {
+                "专业组": 5.0,
+                "选考科目": "历史",
+                "专业名称": "社会学(知行试验班)",
+                "25年计划": 10,
+                "学院名称": "社会学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 8, "min_rank": 657 },
+                    { "year": "2023", "enrollment": 6, "min_rank": 472 },
+                    { "year": "2024", "enrollment": 15, "min_rank": 571 }
+                ]
+            },
+            {
+                "专业组": 6.0,
+                "选考科目": "历史和政治",
+                "专业名称": "政治学类",
+                "25年计划": 22,
+                "学院名称": "政治与公共管理学院",
+                "历年数据": [
+                    { "year": "2022", "enrollment": 9, "min_rank": 704 },
+                    { "year": "2023", "enrollment": 10, "min_rank": 674 },
+                    { "year": "2024", "enrollment": 10, "min_rank": 698 }
+                ]
+            }
+        ];
+
+        const resultsContainer = document.getElementById('resultsContainer');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+
+        /**
+         * 渲染数据显示到页面
+         * @param {Array} dataToRender - 需要被渲染的数据数组
+         */
+        const renderData = (dataToRender) => {
+            resultsContainer.innerHTML = ''; // 清空现有结果
+            
+            if (dataToRender.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            dataToRender.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card bg-white p-6 rounded-lg shadow-md border border-gray-200';
+                
+                // 格式化历年数据
+                const historyDataHtml = item.历年数据.length > 0 ? item.历年数据.map(d => `
+                    <div class="flex justify-between items-center text-sm ${d.enrollment === null && d.min_rank === null ? 'text-gray-400' : ''}">
+                        <span class="font-semibold">${d.year}年:</span>
+                        <div>
+                            <span>录取: ${d.enrollment ?? 'N/A'}</span>, 
+                            <span class="ml-2">最低位次: ${d.min_rank ?? 'N/A'}</span>
+                        </div>
+                    </div>
+                `).join('') : '<p class="text-sm text-gray-400">暂无历年数据</p>';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-xl font-bold text-blue-700 mb-2">${item.专业名称}</h2>
+                        <span class="text-sm font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">专业组 ${item.专业组}</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">${item.学院名称}</p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-gray-700">选考科目:</span>
+                            <span class="font-semibold text-green-600">${item.选考科目}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-gray-700">25年计划:</span>
+                            <span class="font-semibold text-red-500">${item['25年计划']}人</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h3 class="text-md font-semibold mb-2 text-gray-800">历年数据参考</h3>
+                        <div class="space-y-2">
+                           ${historyDataHtml}
+                        </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        };
+
+        /**
+         * 根据输入过滤数据
+         */
+        const filterData = () => {
+            const query = searchInput.value.toLowerCase();
+            const filteredData = data.filter(item => {
+                // 同时搜索专业名称和学院名称
+                return item.专业名称.toLowerCase().includes(query) || item.学院名称.toLowerCase().includes(query);
+            });
+            renderData(filteredData);
+        };
+
+        // 绑定输入事件
+        searchInput.addEventListener('input', filterData);
+
+        // 页面加载时显示所有数据
+        window.onload = () => {
+            renderData(data);
+        };
+
+    </script>
+
+</body>
+</html>
